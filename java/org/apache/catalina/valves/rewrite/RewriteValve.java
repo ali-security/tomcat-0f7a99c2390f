@@ -65,6 +65,13 @@ import org.apache.tomcat.util.http.RequestUtil;
  */
 public class RewriteValve extends ValveBase {
 
+    /**
+     * The maximum number of rounds of rewrite rules triggered by the next flag [N]. This bounds the processing of
+     * configurations whose next rules do not converge, which would otherwise spin in the rule loop without ever
+     * completing the request.
+     */
+    private static final int MAX_REWRITE_ROUNDS = 1000;
+
     private static final URLEncoder REWRITE_DEFAULT_ENCODER;
     private static final URLEncoder REWRITE_QUERY_ENCODER;
 
@@ -356,6 +363,7 @@ public class RewriteValve extends ValveBase {
             boolean qsa = false;
             boolean qsd = false;
             boolean valveSkip = false;
+            int rounds = 0;
 
             // Step 2. Process the URL using the re-write rules.
             for (int i = 0; i < rules.length; i++) {
@@ -496,12 +504,13 @@ public class RewriteValve extends ValveBase {
 
                 // - chain (skip remaining chained rules if this one does not match)
                 if (rule.isChain() && newtest == null) {
-                    for (int j = i; j < rules.length; j++) {
-                        if (!rules[j].isChain()) {
-                            i = j;
-                            break;
-                        }
+                    // Skip the remaining rules in the chain, including the
+                    // terminal rule that does not have the chain flag set.
+                    int j = i + 1;
+                    while (j < rules.length && rules[j].isChain()) {
+                        j++;
                     }
+                    i = j;
                     continue;
                 }
                 // - last (stop rewriting here)
@@ -510,7 +519,15 @@ public class RewriteValve extends ValveBase {
                 }
                 // - next (redo again)
                 if (rule.isNext() && newtest != null) {
-                    i = 0;
+                    if (rounds >= MAX_REWRITE_ROUNDS) {
+                        containerLog.warn(sm.getString("rewriteValve.maxRounds",
+                                Integer.valueOf(MAX_REWRITE_ROUNDS), request.getRequestURI()));
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        done = true;
+                        break;
+                    }
+                    rounds++;
+                    i = -1;
                     continue;
                 }
                 // - skip (n rules)
@@ -597,7 +614,7 @@ public class RewriteValve extends ValveBase {
                     request.setAsyncSupported(pipeline.isAsyncSupported());
                     pipeline.getFirst().invoke(request, response);
                 }
-            } else {
+            } else if (!done) {
                 Valve next = getNext();
                 if (valveSkip) {
                     next = next.getNext();
