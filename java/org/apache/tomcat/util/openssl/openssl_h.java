@@ -886,6 +886,56 @@ public class openssl_h {
         return OCSP_RESPONSE_STATUS_SUCCESSFUL;
     }
 
+    private static final int OCSP_RESPONSE_STATUS_MALFORMEDREQUEST = (int) 1L;
+
+    /**
+     * {@snippet lang = c : * #define OCSP_RESPONSE_STATUS_MALFORMEDREQUEST 1
+     * }
+     */
+    public static int OCSP_RESPONSE_STATUS_MALFORMEDREQUEST() {
+        return OCSP_RESPONSE_STATUS_MALFORMEDREQUEST;
+    }
+
+    private static final int OCSP_RESPONSE_STATUS_INTERNALERROR = (int) 2L;
+
+    /**
+     * {@snippet lang = c : * #define OCSP_RESPONSE_STATUS_INTERNALERROR 2
+     * }
+     */
+    public static int OCSP_RESPONSE_STATUS_INTERNALERROR() {
+        return OCSP_RESPONSE_STATUS_INTERNALERROR;
+    }
+
+    private static final int OCSP_RESPONSE_STATUS_TRYLATER = (int) 3L;
+
+    /**
+     * {@snippet lang = c : * #define OCSP_RESPONSE_STATUS_TRYLATER 3
+     * }
+     */
+    public static int OCSP_RESPONSE_STATUS_TRYLATER() {
+        return OCSP_RESPONSE_STATUS_TRYLATER;
+    }
+
+    private static final int OCSP_RESPONSE_STATUS_SIGREQUIRED = (int) 5L;
+
+    /**
+     * {@snippet lang = c : * #define OCSP_RESPONSE_STATUS_SIGREQUIRED 5
+     * }
+     */
+    public static int OCSP_RESPONSE_STATUS_SIGREQUIRED() {
+        return OCSP_RESPONSE_STATUS_SIGREQUIRED;
+    }
+
+    private static final int OCSP_RESPONSE_STATUS_UNAUTHORIZED = (int) 6L;
+
+    /**
+     * {@snippet lang = c : * #define OCSP_RESPONSE_STATUS_UNAUTHORIZED 6
+     * }
+     */
+    public static int OCSP_RESPONSE_STATUS_UNAUTHORIZED() {
+        return OCSP_RESPONSE_STATUS_UNAUTHORIZED;
+    }
+
     private static final int V_OCSP_CERTSTATUS_GOOD = (int) 0L;
 
     /**
@@ -3576,6 +3626,57 @@ public class openssl_h {
         try {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("X509_STORE_CTX_get_error_depth", ctx);
+            }
+            return (int) mh$.invokeExact(ctx);
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class X509_STORE_CTX_get_num_untrusted {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(openssl_h.C_INT, openssl_h.C_POINTER);
+
+        public static final MemorySegment ADDR = openssl_h.findOrThrow("X509_STORE_CTX_get_num_untrusted");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang = c : * int X509_STORE_CTX_get_num_untrusted(X509_STORE_CTX *ctx)
+     * }
+     */
+    public static FunctionDescriptor X509_STORE_CTX_get_num_untrusted$descriptor() {
+        return X509_STORE_CTX_get_num_untrusted.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang = c : * int X509_STORE_CTX_get_num_untrusted(X509_STORE_CTX *ctx)
+     * }
+     */
+    public static MethodHandle X509_STORE_CTX_get_num_untrusted$handle() {
+        return X509_STORE_CTX_get_num_untrusted.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang = c : * int X509_STORE_CTX_get_num_untrusted(X509_STORE_CTX *ctx)
+     * }
+     */
+    public static MemorySegment X509_STORE_CTX_get_num_untrusted$address() {
+        return X509_STORE_CTX_get_num_untrusted.ADDR;
+    }
+
+    /**
+     * {@snippet lang = c : * int X509_STORE_CTX_get_num_untrusted(X509_STORE_CTX *ctx)
+     * }
+     */
+    public static int X509_STORE_CTX_get_num_untrusted(MemorySegment ctx) {
+        var mh$ = X509_STORE_CTX_get_num_untrusted.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("X509_STORE_CTX_get_num_untrusted", ctx);
             }
             return (int) mh$.invokeExact(ctx);
         } catch (Throwable ex$) {
